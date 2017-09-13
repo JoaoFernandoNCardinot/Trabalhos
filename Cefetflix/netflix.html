@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>CEFETFLIX</title>
+	<meta charset="utf-8">
+	<link href="https://fonts.googleapis.com/css?family=Oswald" rel="stylesheet">
+	<script type="text/javascript" src="./js/filmes.js"></script>
+	<script type="text/javascript" src="./js/jquery.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="./css/font-awesome.css"/>
+	<link rel="stylesheet" type="text/css" href="./css/font-awesome.min.css"/>
+	<link rel="stylesheet" type="text/css" href="./css/filmes.css"/>
+	<script type="text/javascript">
+		$(function(){
+			console.log(filmes);
+			$.each(filmes, function(indice, programa){
+				var $ul= $("<ul />");
+				var $ele= $("<ul />");
+				var $seme= $("<ul />");
+				if(programa.classificacao==0){				
+					var $Classificacao="https://vignette4.wikia.nocookie.net/simsfanon/images/d/d0/Classifica%C3%A7%C3%A3o_Livre.png/revision/latest?cb=20130906042945&path-prefix=pt-br";
+				}else{
+						if(programa.classificacao==10){
+										var $Classificacao="https://vignette2.wikia.nocookie.net/simsfanon/images/4/47/Classifica%C3%A7%C3%A3o_10_anos.png/revision/latest?cb=20130906041926&path-prefix=pt-br";
+						}
+						else{
+							if(programa.classificacao==12){
+								var $Classificacao="https://classificacaoindicativa.files.wordpress.com/2014/09/simbolo-12.jpg";
+							}
+							else{
+								 if(programa.classificacao==14){
+										var $Classificacao="https://classificacaoindicativa.files.wordpress.com/2014/09/simbolo-14.jpg";
+								}
+								else{
+									if(programa.classificacao==16){
+										var $Classificacao="https://classificacaoindicativa.files.wordpress.com/2014/09/simbolo-16.jpg";
+									}
+									else{
+										var $Classificacao="https://classificacaoindicativa.files.wordpress.com/2014/09/simbolo-18.jpg";
+										}
+									}
+								}
+							}
+						} 			 			
+									
+				$.each(programa.elenco, function(i, ator){
+				$ele.append($("<li/>").text(ator.elenco))
+			});
+				$.each(programa.titulosSemelhantes, function(i, tituloId){
+					$.each(filmes, function(i, semelhante){
+						
+						if(semelhante.titulo.length==0){
+							$seme.append("<li />").text("Nenhum título semelhante")
+						}
+						else{
+								if(tituloId==semelhante.id){
+								$seme.append($("<li />").text(semelhante.titulo))
+								}
+						}	
+					})
+					
+				});
+
+				$.each(programa.opinioes, function(i, obj){
+					for ($i=0; $i< obj.rating; $i++){
+						$ul.append($("<i />").addClass("fa fa-star"));
+					}	
+					$ul.append($("<li />").text(obj.descricao));
+				});
+				$(".filmes")
+					.append($("<div />")
+						.addClass("filme")
+						.append($("<img />") .addClass("foto")
+								.attr("src", programa.figura)
+						)
+						.append($("<div />")
+							.addClass("descricao")
+							.append($("<h1 />")
+									.text(programa.titulo)
+							)
+							
+							.append($("<p />")
+									.text(programa.resumo)
+							)
+							.append($("<div />")
+								.addClass("genero")
+								.append($("<h4 />")
+									.text(programa.generos))	
+								)
+							.append($("<div />").addClass("elenco")
+								
+								.append($("<h2 />")
+									.text("Elenco")
+								)
+									.append($("<p />")
+										.text(programa.elenco)
+								)
+							)
+							
+							.append($("<div />")
+								.addClass("classifi")
+								.append($("<img />").addClass("classi")
+									.attr("src",$Classificacao)
+											
+								)
+							)
+							
+
+							.append($("<div />")
+								.addClass("av")
+								.append($("<h2 />")
+									.text("Avaliações")	
+									)
+								.append($ul)
+									
+							
+							)
+								
+							.append($("<div />")
+								.addClass("ts")
+									.append($("<h2 />")
+									.text("Títulos semelhantes")
+									
+								)
+							.append($seme)
+							)
+						)
+					)
+			});
+		})
+	</script>
+</head>
+<body>
+	<div class="logo">
+	<h1>CEFETFLIX</h1>
+	</div>
+	<div class="filmes">
+		
+	</div>
+</body>
+</html>

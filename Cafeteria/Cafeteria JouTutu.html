@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head> 
+	<meta charset="utf-8"/>
+	<title>Cafeteria JouTutu</title>
+	<link href="https://fonts.googleapis.com/css?family=Pacifico|Yanone+Kaffeesatz" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="./css/cssgaribaldo.css"/>
+	<script type="text/javascript" src="./js/jquery.min.js"></script>
+	<script type="text/javascript">
+		$(function(){
+			//funções
+			function carregarPedidos(){
+				$("#corpo").empty();
+					var total = 0;
+					$.each(pedidoarray, function(indice, obj){
+						$("#corpo")
+							.append($("<tr />")
+								.attr("id", obj.id)
+								.append($("<td />").text(obj.nome))
+								.append($("<td />").text(obj.quantidade))
+								.append($("<td />").text(obj.valorunitario))
+								.append($("<td />").text((obj.valorunitario * obj.quantidade)))
+								.append($("<td />")
+									.append($("<img />")
+										.attr("id", obj.id)
+										.attr("src", "http://superprobettanin.com.br/files/template_cache/1d18af09dbd7cc361a717491a0fab21f.png")
+										)
+									)
+							);
+						total = total + (obj.valorunitario * obj.quantidade);
+					});
+					$("#valorTotal").text(total);
+			}
+
+			function produto(id, nome, valor){
+				return {"id": id, "nome": nome, "valorUnitario": valor};
+			}
+			function pedido(id, nome, valor){
+				return {"id": id, "nome": nome, "quantidade": 1, "valorunitario": valor, "valorTotal": valor};
+			}
+			function pesquisaPorId(vetor, objId){
+				var objetoEscolhido;
+				$.each(vetor, function(ind, objeto){
+					if(objeto.id== objId){
+						objetoEscolhido= objeto;
+					}
+				});
+				return objetoEscolhido;
+			}
+
+			//colocar no cardápio
+			var cardapioArray=[
+								produto(1, "Espresso de Diamante", 4.00)
+								, produto(2, "Capuccino", 7.00)
+								, produto(3, "Chococcino", 100.00)
+								, produto(4, "Moccha", 8.00)
+								, produto(5, "Frapuccino de morango", 13.00)
+								, produto(6, "Suquinho de Laranjinha", 4.00)
+								, produto(7, "Café Preto", 50.00)
+								];
+			$.each(cardapioArray, function(indice,produto){
+				$("#corpocard")
+					.append(
+						$("<tr />")
+							.attr("id", produto.id)
+							.append($("<td />").text(produto.nome))
+							.append($("<td />").text(produto.valorUnitario))
+					);
+			});
+
+			//adicionar um item no cardápio
+
+			$("#enviar").click(function(){
+				var nomen = $("#nome").val();
+				var precon = $("#preco").val();
+
+				var novo = produto((cardapioArray.length+1), nomen, precon);
+				cardapioArray.push(novo);
+
+					$("#corpocard").empty();
+
+					$.each(cardapioArray, function(indice,produto){
+						$("#corpocard")
+							.append(
+								$("<tr />")
+									.attr("id", produto.id)
+									.append($("<td />").text(produto.nome))
+									.append($("<td />").text(produto.valorUnitario))
+							);
+						});
+			});
+
+			//colocar na tabela #pedidos
+
+			var pedidoarray = [];
+
+			$("#corpocard").on("click", "tr", function(){
+					var produtoEscolhido= pesquisaPorId(cardapioArray, $(this).attr("id"));
+					var escolha = pedido(produtoEscolhido.id, produtoEscolhido.nome, produtoEscolhido.valorUnitario);
+					var valida = false;
+					$.each(pedidoarray, function(i, escolhas){
+							if(escolhas.id == escolha.id){
+								escolhas.quantidade = parseInt(escolhas.quantidade) + 1;
+								valida = true;
+							}
+					})
+					if(!valida){
+						pedidoarray.push(escolha);
+					}
+
+					carregarPedidos();
+
+			});
+			console.log(pedidoarray);
+
+			//remover da tabela #pedidos
+			$("#corpo").on("click","img",function(){
+				var id= $("img").attr('id');
+				var escolhido= pesquisaPorId(pedidoarray,id);
+				console.log(escolhido);
+
+				var total= ($("#valorTotal").text())- (escolhido.valorTotal);
+				$("#valorTotal").text(total);
+				pedidoarray.splice(1, id);
+				$(this).parents("tr").empty();
+				carregarPedidos();
+
+			});
+		});
+		
+	</script>
+</head>
+<body>
+	<main>
+		<div class="body">
+			<h1>Cafeteria JouTutu</h1>
+			<hr/>
+				<div class="card">
+					<table id="cardapio">
+						<thead>
+						<tr>
+							<th>Nome</th>
+							<th>Preço</th>
+						</tr>
+						</thead>
+						<tbody id="corpocard">
+						</tbody>
+					</table>
+				</div>
+				<div class="adicionar">
+					<h2>Adicionar ao cardápio</h2>
+						<label for="nome">Nome da bebida</label>
+						<input type="text" name="nome" id="nome" />
+						<label for="peco">Preço da bebida</label>
+						<input type="number" name="preco" id="preco" />
+						<input type="submit" id="enviar" value="ADICIONAR"/>
+				</div>
+			<hr/>
+			<h2>Pedido</h2>
+			<table id="pedido">
+				<thead>
+					<tr>
+						<th>Nome</th>
+						<th>Quantidade</th>
+						<th>Valor unitário</th>
+						<th>Valor total por item</th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody id="corpo">
+					
+				</tbody>
+				<tfoot id="total">
+					<tr>
+						<th colspan="3">Total</th>
+						<td id="valorTotal">0</td>
+					</tr>	
+				</tfoot>	
+			</table>
+		</div>
+	</main>
+
+</body>
+</html>
